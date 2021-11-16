@@ -1,0 +1,27 @@
+.section-loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 500%;
+    z-index: 9999;
+    background: 50% 50% no-repeat rgb(208, 224, 255);
+}
+
+.thumb-loader {
+    height: 300px;
+    width: 300px;
+    content: url('../images/preload.svg');
+}
+
+.part-loader {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: 1000;
+    overflow: show;
+    margin: auto;
+    text-align: center;
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Iot",
+    "alias": "iot",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Iot\\Providers\\IotServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
