@@ -47,7 +47,7 @@ class MonitoringController extends Controller
         $dataValueParent = [];
 
         foreach ($iotDeviceDetail as $key => $value) {
-            $getDataValue = IotHistoryValue::where('iot_device_detail_id', $value->id)->limit(10)->orderBy('created_at', 'DESC')->orderBy('id', 'ASC')->get();
+            $getDataValue = IotHistoryValue::where('iot_device_detail_id', $value->id)->limit(100)->orderBy('created_at', 'DESC')->orderBy('id', 'ASC')->get();
 
             $dataValueChild = [];
             foreach ($getDataValue as $keys => $values) {  
@@ -61,6 +61,42 @@ class MonitoringController extends Controller
             'message' => 'Berhasil detail data'
         ], [
             'detailDevice' => $dataIotDeviceDetail,
+            'chartValueDevice' => $dataValueParent,
+        ], 200);
+    }
+
+    public function other()
+    {
+        $iotDevice = IotDevice::with('iot_device_details')->where('is_active', 'yes')->get();
+        $dataIotDevice = $iotDevice->pluck('device_name', 'id');
+
+        return view('othertype', compact('dataIotDevice'));
+    }
+
+    public function detailAll($id)
+    {
+        $iotDeviceDetail = IotDeviceDetail::where('is_active', 'yes')->where('iot_device_id', $id)->get();
+
+        // get value chart every device detail
+        $dataValueParent = [];
+
+        foreach ($iotDeviceDetail as $key => $value) {
+            $getDataValue = IotHistoryValue::where('iot_device_detail_id', $value->id)->limit(100)->orderBy('created_at', 'DESC')->orderBy('id', 'ASC')->get();
+
+            $dataValueChild = [];
+            foreach ($getDataValue as $keys => $values) {  
+                $dataValueChild[] = [date_format($values->created_at, "Y-m-d h:i:s A") . ' UTC', (int) $values->value];
+            }
+            $dataValueParent[] = [
+                'name' => $value->param_value,
+                'data' => $dataValueChild,
+            ];
+        }
+
+        return response()->api([
+            'code' => 200,
+            'message' => 'Berhasil detail data'
+        ], [
             'chartValueDevice' => $dataValueParent,
         ], 200);
     }

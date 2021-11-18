@@ -27,6 +27,7 @@ class Handler
                     'message' => 'membutuhkan data id device'
                 ], [], 500);
             } else {
+                $dataCart = [];
                 $dataInput = $request->except(['id', 'key']);
 
                 $iotDevice = IotDevice::where('id', $request->id)->where('device_key', $request->key)->where('is_active', 'yes')->first();
@@ -51,20 +52,15 @@ class Handler
 
                 $iotDeviceDetail = IotDeviceDetail::where('is_active', 'yes')->where('iot_device_id', $request->id)->get();
 
-                // get value chart every device detail
-                $dataValueParent = [];
+                $dataChartPerDevice = self::getDataPerDevice($iotDeviceDetail);
+                $dataChartAllDevice = self::getDataAllDevice($iotDeviceDetail);
 
-                foreach ($iotDeviceDetail as $key => $value) {
-                    $getDataValue = IotHistoryValue::where('iot_device_detail_id', $value->id)->limit(100)->orderBy('created_at', 'DESC')->orderBy('id', 'ASC')->get();
+                $dataCart = [
+                    'chartPerDetail' => $dataChartPerDevice,
+                    'chartAllDevice' => $dataChartAllDevice,
+                ];
 
-                    $dataValueChild = [];
-                    foreach ($getDataValue as $keys => $values) {  
-                        $dataValueChild[] = [date_format($values->created_at, "Y-m-d h:i:s A") . ' UTC', (int) $values->value];
-                    }
-                    $dataValueParent['chart_line_' . $value->id] = $dataValueChild;
-                }
-
-                event(new RealtimeChartFirst(json_encode($dataValueParent)));
+                event(new RealtimeChartFirst(json_encode($dataCart)));
 
                 return response()->api([
                     'code' => 200,
@@ -75,5 +71,45 @@ class Handler
         } catch (\Exception $e) {
             return app('string.helper')->setErrorResponseApi($e);
         }
+    }
+
+    public function getDataPerDevice($iotDeviceDetail)
+    {
+        // get value chart every device detail
+        $dataValueParent = [];
+
+        foreach ($iotDeviceDetail as $key => $value) {
+            $getDataValue = IotHistoryValue::where('iot_device_detail_id', $value->id)->limit(100)->orderBy('created_at', 'DESC')->orderBy('id', 'ASC')->get();
+
+            $dataValueChild = [];
+            foreach ($getDataValue as $keys => $values) {  
+                $dataValueChild[] = [date_format($values->created_at, "Y-m-d h:i:s A") . ' UTC', (int) $values->value];
+            }
+            $dataValueParent['chart_line_' . $value->id] = $dataValueChild;
+        }
+
+        return $dataValueParent;
+    }
+
+    public function getDataAllDevice($iotDeviceDetail)
+    {
+        // get value chart every device detail
+        $dataValueParent = [];
+
+        foreach ($iotDeviceDetail as $key => $value) {
+            $getDataValue = IotHistoryValue::where('iot_device_detail_id', $value->id)->limit(100)->orderBy('created_at', 'DESC')->orderBy('id', 'ASC')->get();
+
+            $dataValueChild = [];
+            foreach ($getDataValue as $keys => $values) {  
+                $dataValueChild[] = [date_format($values->created_at, "Y-m-d h:i:s A") . ' UTC', (int) $values->value];
+            }
+
+            $dataValueParent[] = [
+                'name' => $value->param_value,
+                'data' => $dataValueChild,
+            ];
+        }
+
+        return $dataValueParent;
     }
 }

@@ -38,7 +38,7 @@
     <!-- END wrapper -->
 
     <!-- Right Sidebar -->
-    @include('layouts.skote-horizontal.right-sidebar')
+    {{-- @include('layouts.skote-horizontal.right-sidebar') --}}
     <!-- END Right Sidebar -->
 
     @include('layouts.skote-horizontal.vendor-scripts')

@@ -18,5 +18,7 @@ Route::get('/', function () {
     return redirect(route('monitoring.index'));
 });
 
-Route::resource('monitoring', 'MonitoringController');
+Route::get('/monitoring/other', 'MonitoringController@other')->name('devices.detail.one');
 Route::get('/monitoring/device/detail/{id}', 'MonitoringController@detail')->name('devices.detail');
+Route::get('/monitoring/device/detail-all/{id}', 'MonitoringController@detailAll')->name('devices.detail.all');
+Route::resource('monitoring', 'MonitoringController');

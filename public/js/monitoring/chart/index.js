@@ -38,12 +38,13 @@ $(function () {
     });
 
     var channel = pusher.subscribe('my-channel');
-    channel.bind('realtime-chart-monitoring', function(data) {      
+    channel.bind('realtime-chart-monitoring', function(data) {
       
 		let dataObj = JSON.parse(data.data);
 		let num = 0
 
-		$.each( dataObj, function( key, value ) {
+		// per device
+		$.each( dataObj.chartPerDetail, function( key, value ) {
 			let dataArray = []
 			let dataValue = []
 			num++
