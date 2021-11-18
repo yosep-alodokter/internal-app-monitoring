@@ -145,14 +145,15 @@ $(function () {
 })
 
 function fetchChart(idSelector, dataValue = []) {
-    var options = {
+      var options = {
         series: dataValue,
         chart: {
             id: "chart_line_0",
             height: 550,
             type: 'line',
             zoom: {
-                enabled: true
+                enabled: true,
+                autoScaleYaxis: true
             },
             stacked: false
         },
@@ -167,9 +168,9 @@ function fetchChart(idSelector, dataValue = []) {
             align: 'left'
         },
         legend: {
-        tooltipHoverFormatter: function(val, opts) {
-            return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
-        }
+            tooltipHoverFormatter: function(val, opts) {
+                return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
+            }
         },
         markers: {
             size: 0,
